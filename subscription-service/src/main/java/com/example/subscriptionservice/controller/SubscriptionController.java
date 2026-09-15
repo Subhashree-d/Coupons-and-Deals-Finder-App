@@ -1,0 +1,91 @@
+package com.example.subscriptionservice.controller;
+
+import com.example.subscriptionservice.dto.CreateSubscriptionRequest;
+import com.example.subscriptionservice.dto.SubscriptionPlanResponse;
+import com.example.subscriptionservice.dto.SubscriptionResponse;
+import com.example.subscriptionservice.service.SubscriptionService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/subscriptions")
+@Tag(
+    name = "Subscription Controller",
+    description = "Endpoints for subscription plans and merchant subscriptions"
+)
+public class SubscriptionController {
+
+    private final SubscriptionService subscriptionService;
+
+    public SubscriptionController(SubscriptionService subscriptionService) {
+        this.subscriptionService = subscriptionService;
+    }
+
+    @GetMapping("/plans")
+    @Operation(
+        summary = "Get all available subscription plans (Basic, Standard, Premium, Business)"
+    )
+    public ResponseEntity<List<SubscriptionPlanResponse>> getAllPlans() {
+        return ResponseEntity.ok(subscriptionService.getAllPlans());
+    }
+
+    @GetMapping("/plans/{planId}")
+    @Operation(summary = "Get subscription plan by ID")
+    public ResponseEntity<SubscriptionPlanResponse> getPlanById(
+            @PathVariable("planId") Long planId) {
+
+        return ResponseEntity.ok(subscriptionService.getPlanById(planId));
+    }
+
+    @PostMapping
+    @Operation(
+        summary = "Purchase a subscription (Created as PENDING_VERIFICATION)"
+    )
+    public ResponseEntity<SubscriptionResponse> createSubscription(
+            @Valid @RequestBody CreateSubscriptionRequest request) {
+
+        return new ResponseEntity<>(
+                subscriptionService.createSubscription(request),
+                HttpStatus.CREATED
+        );
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get subscription details by ID")
+    public ResponseEntity<SubscriptionResponse> getSubscriptionById(
+            @PathVariable("id") Long id) {
+
+        return ResponseEntity.ok(
+                subscriptionService.getSubscriptionById(id)
+        );
+    }
+
+    @GetMapping("/merchant/{merchantId}")
+    @Operation(summary = "Get all subscription records for a merchant")
+    public ResponseEntity<List<SubscriptionResponse>> getSubscriptionsByMerchant(
+            @PathVariable("merchantId") Long merchantId) {
+
+        return ResponseEntity.ok(
+                subscriptionService.getSubscriptionsByMerchantId(merchantId)
+        );
+    }
+
+    @GetMapping("/merchant/{merchantId}/active")
+    @Operation(summary = "Get the current active subscription for a merchant")
+    public ResponseEntity<SubscriptionResponse> getActiveSubscription(
+            @PathVariable("merchantId") Long merchantId) {
+
+        return ResponseEntity.ok(
+                subscriptionService.getActiveSubscription(merchantId)
+        );
+    }
+}
