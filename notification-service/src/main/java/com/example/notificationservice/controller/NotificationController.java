@@ -11,10 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notifications")
-@Tag(
-    name = "Notification Controller",
-    description = "Endpoints for viewing simulated SMS/Email alert logs dispatched by RabbitMQ events"
-)
+@Tag(name = "Notification Controller", description = "Endpoints for viewing simulated SMS/Email alert logs dispatched by RabbitMQ events")
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -31,10 +28,7 @@ public class NotificationController {
 
     @GetMapping("/recipient/{recipient}")
     @Operation(summary = "Get notification logs for a specific recipient email/phone")
-    public ResponseEntity<List<NotificationResponse>> getNotificationsByRecipient(
-            @PathVariable("recipient") String recipient) {
-        return ResponseEntity.ok(
-            notificationService.getNotificationsByRecipient(recipient)
-        );
+    public ResponseEntity<List<NotificationResponse>> getNotificationsByRecipient(@PathVariable("recipient") String recipient) {
+        return ResponseEntity.ok(notificationService.getNotificationsByRecipient(recipient));
     }
 }

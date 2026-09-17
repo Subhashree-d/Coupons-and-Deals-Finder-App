@@ -37,9 +37,7 @@ public class NotificationLog {
 
     public NotificationLog() {}
 
-    public NotificationLog(Long id, String recipient, String recipientType,
-                           String subject, String message,
-                           NotificationChannel channel) {
+    public NotificationLog(Long id, String recipient, String recipientType, String subject, String message, NotificationChannel channel) {
         this.id = id;
         this.recipient = recipient;
         this.recipientType = recipientType;
@@ -48,59 +46,24 @@ public class NotificationLog {
         this.channel = channel;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getRecipient() { return recipient; }
+    public void setRecipient(String recipient) { this.recipient = recipient; }
 
-    public String getRecipient() {
-        return recipient;
-    }
+    public String getRecipientType() { return recipientType; }
+    public void setRecipientType(String recipientType) { this.recipientType = recipientType; }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
-    }
+    public String getSubject() { return subject; }
+    public void setSubject(String subject) { this.subject = subject; }
 
-    public String getRecipientType() {
-        return recipientType;
-    }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 
-    public void setRecipientType(String recipientType) {
-        this.recipientType = recipientType;
-    }
+    public NotificationChannel getChannel() { return channel; }
+    public void setChannel(NotificationChannel channel) { this.channel = channel; }
 
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public NotificationChannel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(NotificationChannel channel) {
-        this.channel = channel;
-    }
-
-    public LocalDateTime getSentAt() {
-        return sentAt;
-    }
-
-    public void setSentAt(LocalDateTime sentAt) {
-        this.sentAt = sentAt;
-    }
+    public LocalDateTime getSentAt() { return sentAt; }
+    public void setSentAt(LocalDateTime sentAt) { this.sentAt = sentAt; }
 }

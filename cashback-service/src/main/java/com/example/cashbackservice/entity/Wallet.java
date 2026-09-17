@@ -25,27 +25,12 @@ public class Wallet {
         this.balance = balance;
     }
 
-    public Long getWalletId() {
-        return walletId;
-    }
+    public Long getWalletId() { return walletId; }
+    public void setWalletId(Long walletId) { this.walletId = walletId; }
 
-    public void setWalletId(Long walletId) {
-        this.walletId = walletId;
-    }
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
 
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
+    public BigDecimal getBalance() { return balance; }
+    public void setBalance(BigDecimal balance) { this.balance = balance; }
 }

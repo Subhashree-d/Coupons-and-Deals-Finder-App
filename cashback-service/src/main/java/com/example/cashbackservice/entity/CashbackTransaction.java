@@ -34,12 +34,7 @@ public class CashbackTransaction {
 
     public CashbackTransaction() {}
 
-    public CashbackTransaction(
-            Long transactionId,
-            Long customerId,
-            BigDecimal amount,
-            TransactionType type,
-            String referenceId) {
+    public CashbackTransaction(Long transactionId, Long customerId, BigDecimal amount, TransactionType type, String referenceId) {
         this.transactionId = transactionId;
         this.customerId = customerId;
         this.amount = amount;
@@ -47,51 +42,21 @@ public class CashbackTransaction {
         this.referenceId = referenceId;
     }
 
-    public Long getTransactionId() {
-        return transactionId;
-    }
+    public Long getTransactionId() { return transactionId; }
+    public void setTransactionId(Long transactionId) { this.transactionId = transactionId; }
 
-    public void setTransactionId(Long transactionId) {
-        this.transactionId = transactionId;
-    }
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
 
-    public Long getCustomerId() {
-        return customerId;
-    }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
+    public TransactionType getType() { return type; }
+    public void setType(TransactionType type) { this.type = type; }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
+    public String getReferenceId() { return referenceId; }
+    public void setReferenceId(String referenceId) { this.referenceId = referenceId; }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public TransactionType getType() {
-        return type;
-    }
-
-    public void setType(TransactionType type) {
-        this.type = type;
-    }
-
-    public String getReferenceId() {
-        return referenceId;
-    }
-
-    public void setReferenceId(String referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
