@@ -14,43 +14,34 @@ public class RabbitMqConfig {
 
     @Value("${rabbitmq.exchange.redemption:deals.redemption.exchange}")
     private String redemptionExchange;
-
     @Value("${rabbitmq.queue.coupon-redeemed:cashback.coupon.redeemed.queue}")
     private String couponRedeemedQueue;
-
     @Value("${rabbitmq.routingkey.coupon-redeemed:coupon.redeemed}")
     private String couponRedeemedRoutingKey;
-
     @Value("${rabbitmq.exchange.cashback:deals.cashback.exchange}")
     private String cashbackExchange;
-
     @Bean
     public TopicExchange redemptionExchange() {
         return new TopicExchange(redemptionExchange);
     }
-
     @Bean
     public TopicExchange cashbackExchange() {
         return new TopicExchange(cashbackExchange);
     }
-
     @Bean
     public Queue couponRedeemedQueue() {
         return new Queue(couponRedeemedQueue, true);
     }
-
     @Bean
     public Binding couponRedeemedBinding() {
         return BindingBuilder.bind(couponRedeemedQueue())
                 .to(redemptionExchange())
                 .with(couponRedeemedRoutingKey);
     }
-
     @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
-
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);

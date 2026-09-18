@@ -36,8 +36,9 @@ public class NotificationEventConsumers {
         log.info("Notification Service received CouponRedeemedEvent for customerId: {}, merchantId: {}",
                 event.getCustomerId(), event.getMerchantId());
 
-        String message = String.format("Coupon ID %d redeemed for purchase of ₹%s. Discount of ₹%s applied.",
-                event.getCouponId(), event.getPurchaseAmount(), event.getDiscountAmount());
+        int points = event.getPointsEarned() != null ? event.getPointsEarned() : 10;
+        String message = String.format("Coupon ID %d redeemed for purchase of ₹%s. Discount of ₹%s applied. +%d Points added to your account!",
+                event.getCouponId(), event.getPurchaseAmount(), event.getDiscountAmount(), points);
 
         notificationService.sendNotification("customer_" + event.getCustomerId() + "@dealsplatform.com", "CUSTOMER", "Coupon Redeemed Successfully", message, NotificationChannel.SMS);
     }

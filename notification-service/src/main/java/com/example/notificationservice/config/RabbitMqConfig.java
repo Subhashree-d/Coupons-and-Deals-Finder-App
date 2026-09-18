@@ -92,7 +92,16 @@ public class RabbitMqConfig {
 
     @Bean
     public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+        Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+        org.springframework.amqp.support.converter.DefaultClassMapper classMapper = new org.springframework.amqp.support.converter.DefaultClassMapper();
+        classMapper.setTrustedPackages("*");
+        java.util.Map<String, Class<?>> idClassMapping = new java.util.HashMap<>();
+        idClassMapping.put("com.example.paymentservice.dto.PaymentVerifiedEvent", com.example.notificationservice.dto.PaymentVerifiedEvent.class);
+        idClassMapping.put("com.example.redemptionservice.dto.CouponRedeemedEvent", com.example.notificationservice.dto.CouponRedeemedEvent.class);
+        idClassMapping.put("com.example.cashbackservice.dto.CashbackCreditedEvent", com.example.notificationservice.dto.CashbackCreditedEvent.class);
+        classMapper.setIdClassMapping(idClassMapping);
+        converter.setClassMapper(classMapper);
+        return converter;
     }
 
     @Bean

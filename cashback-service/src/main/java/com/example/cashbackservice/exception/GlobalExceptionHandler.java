@@ -25,7 +25,6 @@ public class GlobalExceptionHandler {
         body.put("path", req.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
-
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex, WebRequest req) {
         Map<String, Object> body = new HashMap<>();
@@ -47,7 +46,6 @@ public class GlobalExceptionHandler {
         body.put("path", req.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex, WebRequest req) {
         Map<String, Object> body = new HashMap<>();
@@ -63,7 +61,6 @@ public class GlobalExceptionHandler {
         body.put("path", req.getDescription(false).replace("uri=", ""));
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex, WebRequest req) {
         Map<String, Object> body = new HashMap<>();

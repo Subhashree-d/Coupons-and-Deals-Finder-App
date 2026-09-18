@@ -13,6 +13,7 @@ public class CouponRedeemedEvent implements Serializable {
     private BigDecimal discountAmount;
     private BigDecimal cashbackPercentage;
     private LocalDateTime redeemedAt;
+    private Integer pointsEarned;
 
     public CouponRedeemedEvent() {}
 
@@ -39,4 +40,7 @@ public class CouponRedeemedEvent implements Serializable {
 
     public LocalDateTime getRedeemedAt() { return redeemedAt; }
     public void setRedeemedAt(LocalDateTime redeemedAt) { this.redeemedAt = redeemedAt; }
+
+    public Integer getPointsEarned() { return pointsEarned; }
+    public void setPointsEarned(Integer pointsEarned) { this.pointsEarned = pointsEarned; }
 }

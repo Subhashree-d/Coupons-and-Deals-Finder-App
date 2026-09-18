@@ -9,15 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CouponRedeemedConsumer {
-
     private static final Logger log = LoggerFactory.getLogger(CouponRedeemedConsumer.class);
-
     private final CashbackService cashbackService;
-
     public CouponRedeemedConsumer(CashbackService cashbackService) {
         this.cashbackService = cashbackService;
     }
-
     @RabbitListener(queues = "${rabbitmq.queue.coupon-redeemed:cashback.coupon.redeemed.queue}")
     public void handleCouponRedeemed(CouponRedeemedEvent event) {
         log.info("Received CouponRedeemedEvent for customer ID: {}, redemption ID: {}",
