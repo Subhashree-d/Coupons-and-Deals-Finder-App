@@ -1,0 +1,14 @@
+# Eclipse / STS
+.classpath
+.project
+.settings/
+
+# Maven
+target/
+
+# STS workspace
+.metadata/
+
+# IntelliJ
+.idea/
+*.iml
