@@ -24,7 +24,7 @@ public class NotificationLog {
     private String message;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "channel", nullable = false, length = 30, columnDefinition = "VARCHAR(30)")
     private NotificationChannel channel;
 
     @Column(name = "sent_at", nullable = false)

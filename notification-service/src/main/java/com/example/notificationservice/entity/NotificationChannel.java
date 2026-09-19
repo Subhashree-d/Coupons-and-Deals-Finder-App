@@ -2,5 +2,6 @@ package com.example.notificationservice.entity;
 
 public enum NotificationChannel {
     EMAIL,
-    SMS
+    SMS,
+    IN_APP
 }

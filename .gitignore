@@ -1,14 +1,15 @@
-# Eclipse / STS
+# Maven build output
+**/target/
+
+# Project build files
+**/pom.xml
+**/Dockerfile
+
+# IDE files
 .classpath
 .project
 .settings/
-
-# Maven
-target/
-
-# STS workspace
 .metadata/
-
-# IntelliJ
 .idea/
 *.iml
+.factorypath

@@ -39,6 +39,15 @@ public class RabbitMqConfig {
     @Value("${rabbitmq.routingkey.cashback-credited:cashback.credited}")
     private String cashbackCreditedRoutingKey;
 
+    @Value("${rabbitmq.exchange.notification:deals.notification.exchange}")
+    private String notificationExchange;
+
+    @Value("${rabbitmq.queue.merchant-alert-notification:notification.merchant.alert.queue}")
+    private String merchantAlertNotificationQueue;
+
+    @Value("${rabbitmq.routingkey.merchant-alert:merchant.coupon.alert}")
+    private String merchantAlertRoutingKey;
+
     @Bean
     public TopicExchange paymentExchange() {
         return new TopicExchange(paymentExchange);
@@ -55,6 +64,11 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public TopicExchange notificationExchange() {
+        return new TopicExchange(notificationExchange);
+    }
+
+    @Bean
     public Queue paymentNotificationQueue() {
         return new Queue(paymentNotificationQueue, true);
     }
@@ -67,6 +81,11 @@ public class RabbitMqConfig {
     @Bean
     public Queue cashbackNotificationQueue() {
         return new Queue(cashbackNotificationQueue, true);
+    }
+
+    @Bean
+    public Queue merchantAlertNotificationQueue() {
+        return new Queue(merchantAlertNotificationQueue, true);
     }
 
     @Bean
@@ -91,6 +110,13 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Binding merchantAlertNotificationBinding() {
+        return BindingBuilder.bind(merchantAlertNotificationQueue())
+                .to(notificationExchange())
+                .with(merchantAlertRoutingKey);
+    }
+
+    @Bean
     public MessageConverter jsonMessageConverter() {
         Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
         org.springframework.amqp.support.converter.DefaultClassMapper classMapper = new org.springframework.amqp.support.converter.DefaultClassMapper();
@@ -99,6 +125,7 @@ public class RabbitMqConfig {
         idClassMapping.put("com.example.paymentservice.dto.PaymentVerifiedEvent", com.example.notificationservice.dto.PaymentVerifiedEvent.class);
         idClassMapping.put("com.example.redemptionservice.dto.CouponRedeemedEvent", com.example.notificationservice.dto.CouponRedeemedEvent.class);
         idClassMapping.put("com.example.cashbackservice.dto.CashbackCreditedEvent", com.example.notificationservice.dto.CashbackCreditedEvent.class);
+        idClassMapping.put("com.example.merchantalertservice.dto.MerchantCouponAlertEvent", com.example.notificationservice.dto.MerchantCouponAlertEvent.class);
         classMapper.setIdClassMapping(idClassMapping);
         converter.setClassMapper(classMapper);
         return converter;

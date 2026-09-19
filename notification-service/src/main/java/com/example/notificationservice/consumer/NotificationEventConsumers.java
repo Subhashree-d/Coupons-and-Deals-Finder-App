@@ -23,33 +23,73 @@ public class NotificationEventConsumers {
 
     @RabbitListener(queues = "${rabbitmq.queue.payment-notification:notification.payment.queue}")
     public void handlePaymentVerified(PaymentVerifiedEvent event) {
-        log.info("Notification Service received PaymentVerifiedEvent for merchantId: {}", event.getMerchantId());
-        String subject = "Subscription Payment Verified & Activated!";
-        String message = String.format("Dear Merchant (ID: %d), your payment of ₹%s (Payment ID: %d) has been verified. Your subscription (ID: %d) is now ACTIVE.",
-                event.getMerchantId(), event.getAmount(), event.getPaymentId(), event.getSubscriptionId());
+        try {
+            log.info("Notification Service received PaymentVerifiedEvent for merchantId: {}", event.getMerchantId());
+            String subject = "Subscription Payment Verified & Activated!";
+            String message = String.format("Dear Merchant (ID: %d), your payment of ₹%s (Payment ID: %d) has been verified. Your subscription (ID: %d) is now ACTIVE.",
+                    event.getMerchantId(), event.getAmount(), event.getPaymentId(), event.getSubscriptionId());
 
-        notificationService.sendNotification("merchant_" + event.getMerchantId() + "@dealsplatform.com", "MERCHANT", subject, message, NotificationChannel.EMAIL);
+            notificationService.sendNotification("merchant_" + event.getMerchantId() + "@dealsplatform.com", "MERCHANT", subject, message, NotificationChannel.EMAIL);
+        } catch (Exception e) {
+            log.error("Failed to process payment verified notification for merchantId: {}: {}", event.getMerchantId(), e.getMessage(), e);
+        }
     }
 
     @RabbitListener(queues = "${rabbitmq.queue.redemption-notification:notification.redemption.queue}")
     public void handleCouponRedeemed(CouponRedeemedEvent event) {
-        log.info("Notification Service received CouponRedeemedEvent for customerId: {}, merchantId: {}",
-                event.getCustomerId(), event.getMerchantId());
+        try {
+            log.info("Notification Service received CouponRedeemedEvent for customerId: {}, merchantId: {}",
+                    event.getCustomerId(), event.getMerchantId());
 
-        int points = event.getPointsEarned() != null ? event.getPointsEarned() : 10;
-        String message = String.format("Coupon ID %d redeemed for purchase of ₹%s. Discount of ₹%s applied. +%d Points added to your account!",
-                event.getCouponId(), event.getPurchaseAmount(), event.getDiscountAmount(), points);
+            int points = event.getPointsEarned() != null ? event.getPointsEarned() : 10;
+            String message = String.format("Coupon ID %d redeemed for purchase of ₹%s. Discount of ₹%s applied. +%d Points added to your account!",
+                    event.getCouponId(), event.getPurchaseAmount(), event.getDiscountAmount(), points);
 
-        notificationService.sendNotification("customer_" + event.getCustomerId() + "@dealsplatform.com", "CUSTOMER", "Coupon Redeemed Successfully", message, NotificationChannel.SMS);
+            notificationService.sendNotification("customer_" + event.getCustomerId() + "@dealsplatform.com", "CUSTOMER", "Coupon Redeemed Successfully", message, NotificationChannel.SMS);
+        } catch (Exception e) {
+            log.error("Failed to process coupon redeemed notification for customerId: {}: {}", event.getCustomerId(), e.getMessage(), e);
+        }
     }
 
     @RabbitListener(queues = "${rabbitmq.queue.cashback-notification:notification.cashback.queue}")
     public void handleCashbackCredited(CashbackCreditedEvent event) {
-        log.info("Notification Service received CashbackCreditedEvent for customerId: {}", event.getCustomerId());
+        try {
+            log.info("Notification Service received CashbackCreditedEvent for customerId: {}", event.getCustomerId());
 
-        String message = String.format("Congratulations! ₹%s cashback has been added to your wallet. Your new balance is ₹%s.",
-                event.getAmount(), event.getNewBalance());
+            String message = String.format("Congratulations! ₹%s cashback has been added to your wallet. Your new balance is ₹%s.",
+                    event.getAmount(), event.getNewBalance());
 
-        notificationService.sendNotification("customer_" + event.getCustomerId() + "@dealsplatform.com", "CUSTOMER", "Cashback Credited!", message, NotificationChannel.SMS);
+            notificationService.sendNotification("customer_" + event.getCustomerId() + "@dealsplatform.com", "CUSTOMER", "Cashback Credited!", message, NotificationChannel.SMS);
+        } catch (Exception e) {
+            log.error("Failed to process cashback credited notification for customerId: {}: {}", event.getCustomerId(), e.getMessage(), e);
+        }
+    }
+
+    @RabbitListener(queues = "${rabbitmq.queue.merchant-alert-notification:notification.merchant.alert.queue}")
+    public void handleMerchantCouponAlert(com.example.notificationservice.dto.MerchantCouponAlertEvent event) {
+        log.info("Notification Service received MerchantCouponAlertEvent for customerId: {}, merchantId: {}, couponId: {}",
+                event.getCustomerId(), event.getMerchantId(), event.getCouponId());
+
+        try {
+            String merchantDisplay = event.getMerchantName() != null ? event.getMerchantName() : "Merchant #" + event.getMerchantId();
+            String subject = "New Coupon Alert from " + merchantDisplay + "!";
+            String message = String.format("Great news! %s just launched a new coupon: \"%s\" (Code: %s) for ₹%s OFF! Grab it before it expires.",
+                    merchantDisplay, event.getCouponTitle(), event.getCouponCode(), event.getDiscount());
+
+            String recipient = "customer_" + event.getCustomerId() + "@dealsplatform.com";
+
+            if (event.isEmailEnabled()) {
+                notificationService.sendNotification(recipient, "CUSTOMER", subject, message, NotificationChannel.EMAIL);
+            }
+            if (event.isSmsEnabled()) {
+                notificationService.sendNotification(recipient, "CUSTOMER", subject, message, NotificationChannel.SMS);
+            }
+            if (event.isInAppEnabled()) {
+                notificationService.sendNotification(recipient, "CUSTOMER", subject, message, NotificationChannel.IN_APP);
+            }
+        } catch (Exception e) {
+            log.error("Failed to process merchant coupon alert for customerId: {}, couponId: {}: {}",
+                    event.getCustomerId(), event.getCouponId(), e.getMessage(), e);
+        }
     }
 }
