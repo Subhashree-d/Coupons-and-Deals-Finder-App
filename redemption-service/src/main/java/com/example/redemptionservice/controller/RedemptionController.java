@@ -49,4 +49,42 @@ public class RedemptionController {
     public ResponseEntity<List<RedemptionResponse>> getRedemptionsByMerchant(@PathVariable("id") Long id) {
         return ResponseEntity.ok(redemptionService.getRedemptionsByMerchantId(id));
     }
+
+    @GetMapping("/api/redemptions/my-history")
+    @Operation(summary = "Get paginated customer redemption history")
+    public ResponseEntity<com.example.redemptionservice.dto.CustomerRedemptionHistoryResponse> getMyRedemptionHistory(
+            @RequestParam(value = "customerId", required = false) Long customerId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestHeader(value = "X-User-Id", required = false) String authUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String authUserRole) {
+        Long targetCustomerId = customerId;
+        if (targetCustomerId == null && authUserId != null && !authUserId.isBlank()) {
+            targetCustomerId = Long.valueOf(authUserId);
+        }
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        return ResponseEntity.ok(redemptionService.getCustomerRedemptionHistory(targetCustomerId, pageable, authUserId, authUserRole));
+    }
+
+    @GetMapping("/api/redemptions/my-history/recent")
+    @Operation(summary = "Get recent customer redemptions (default up to 10)")
+    public ResponseEntity<List<com.example.redemptionservice.dto.CustomerRedemptionHistoryItemDto>> getRecentRedemptionHistory(
+            @RequestParam(value = "customerId", required = false) Long customerId,
+            @RequestParam(value = "limit", defaultValue = "10") int limit,
+            @RequestHeader(value = "X-User-Id", required = false) String authUserId,
+            @RequestHeader(value = "X-User-Role", required = false) String authUserRole) {
+        Long targetCustomerId = customerId;
+        if (targetCustomerId == null && authUserId != null && !authUserId.isBlank()) {
+            targetCustomerId = Long.valueOf(authUserId);
+        }
+        return ResponseEntity.ok(redemptionService.getRecentRedemptionHistory(targetCustomerId, limit, authUserId, authUserRole));
+    }
+
+    @GetMapping("/api/redemptions/check")
+    @Operation(summary = "Internal: Check if a customer has redeemed a specific coupon")
+    public ResponseEntity<Boolean> hasCustomerRedeemed(
+            @RequestParam("customerId") Long customerId,
+            @RequestParam("couponId") Long couponId) {
+        return ResponseEntity.ok(redemptionService.hasCustomerRedeemed(customerId, couponId));
+    }
 }

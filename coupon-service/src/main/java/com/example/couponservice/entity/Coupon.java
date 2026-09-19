@@ -38,10 +38,10 @@ public class Coupon {
     private BigDecimal minimumPurchase;
 
     @Column(nullable = false)
-    private LocalDate validFrom;
+    private LocalDateTime validFrom;
 
     @Column(nullable = false)
-    private LocalDate validUntil;
+    private LocalDateTime validUntil;
 
     @Column(nullable = false)
     private Integer usageLimit;
@@ -58,6 +58,15 @@ public class Coupon {
 
     private String approvedBy;
 
+    @Column(nullable = false)
+    private Integer upvoteCount = 0;
+
+    @Column(nullable = false)
+    private Integer downvoteCount = 0;
+
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal reliabilityScore = BigDecimal.ZERO;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -66,6 +75,15 @@ public class Coupon {
         }
         if (this.status == null) {
             this.status = CouponStatus.PENDING_APPROVAL;
+        }
+        if (this.upvoteCount == null) {
+            this.upvoteCount = 0;
+        }
+        if (this.downvoteCount == null) {
+            this.downvoteCount = 0;
+        }
+        if (this.reliabilityScore == null) {
+            this.reliabilityScore = BigDecimal.ZERO;
         }
     }
 
@@ -98,11 +116,11 @@ public class Coupon {
     public BigDecimal getMinimumPurchase() { return minimumPurchase; }
     public void setMinimumPurchase(BigDecimal minimumPurchase) { this.minimumPurchase = minimumPurchase; }
 
-    public LocalDate getValidFrom() { return validFrom; }
-    public void setValidFrom(LocalDate validFrom) { this.validFrom = validFrom; }
+    public LocalDateTime getValidFrom() { return validFrom; }
+    public void setValidFrom(LocalDateTime validFrom) { this.validFrom = validFrom; }
 
-    public LocalDate getValidUntil() { return validUntil; }
-    public void setValidUntil(LocalDate validUntil) { this.validUntil = validUntil; }
+    public LocalDateTime getValidUntil() { return validUntil; }
+    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
 
     public Integer getUsageLimit() { return usageLimit; }
     public void setUsageLimit(Integer usageLimit) { this.usageLimit = usageLimit; }
@@ -118,4 +136,13 @@ public class Coupon {
 
     public String getApprovedBy() { return approvedBy; }
     public void setApprovedBy(String approvedBy) { this.approvedBy = approvedBy; }
+
+    public Integer getUpvoteCount() { return upvoteCount; }
+    public void setUpvoteCount(Integer upvoteCount) { this.upvoteCount = upvoteCount; }
+
+    public Integer getDownvoteCount() { return downvoteCount; }
+    public void setDownvoteCount(Integer downvoteCount) { this.downvoteCount = downvoteCount; }
+
+    public BigDecimal getReliabilityScore() { return reliabilityScore; }
+    public void setReliabilityScore(BigDecimal reliabilityScore) { this.reliabilityScore = reliabilityScore; }
 }

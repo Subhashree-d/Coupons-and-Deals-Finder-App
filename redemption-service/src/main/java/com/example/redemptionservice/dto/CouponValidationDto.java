@@ -1,7 +1,7 @@
 package com.example.redemptionservice.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class CouponValidationDto {
     private Long couponId;
@@ -10,12 +10,17 @@ public class CouponValidationDto {
     private BigDecimal discount;
     private BigDecimal cashbackPercentage;
     private BigDecimal minimumPurchase;
-    private LocalDate validUntil;
+    private LocalDateTime validFrom;
+    private LocalDateTime validUntil;
     private Integer usageLimit;
     private Integer usageCount;
+    private String couponCode;
     private String status;
 
     public CouponValidationDto() {}
+
+    public String getCouponCode() { return couponCode; }
+    public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
 
     public Long getCouponId() { return couponId; }
     public void setCouponId(Long couponId) { this.couponId = couponId; }
@@ -35,8 +40,11 @@ public class CouponValidationDto {
     public BigDecimal getMinimumPurchase() { return minimumPurchase; }
     public void setMinimumPurchase(BigDecimal minimumPurchase) { this.minimumPurchase = minimumPurchase; }
 
-    public LocalDate getValidUntil() { return validUntil; }
-    public void setValidUntil(LocalDate validUntil) { this.validUntil = validUntil; }
+    public LocalDateTime getValidFrom() { return validFrom; }
+    public void setValidFrom(LocalDateTime validFrom) { this.validFrom = validFrom; }
+
+    public LocalDateTime getValidUntil() { return validUntil; }
+    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
 
     public Integer getUsageLimit() { return usageLimit; }
     public void setUsageLimit(Integer usageLimit) { this.usageLimit = usageLimit; }

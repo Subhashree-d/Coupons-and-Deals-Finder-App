@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     List<Coupon> findByMerchantId(Long merchantId);
+    long countByMerchantId(Long merchantId);
     List<Coupon> findByStatus(CouponStatus status);
     List<Coupon> findByCategoryAndStatus(String category, CouponStatus status);
     Optional<Coupon> findByCouponCode(String couponCode);

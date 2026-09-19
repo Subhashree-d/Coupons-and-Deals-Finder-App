@@ -9,16 +9,22 @@ public class SubscriptionResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
+    private Integer couponLimit;
 
     public SubscriptionResponseDto() {}
 
     public SubscriptionResponseDto(Long subscriptionId, Long merchantId, String planName, LocalDate startDate, LocalDate endDate, String status) {
+        this(subscriptionId, merchantId, planName, startDate, endDate, status, null);
+    }
+
+    public SubscriptionResponseDto(Long subscriptionId, Long merchantId, String planName, LocalDate startDate, LocalDate endDate, String status, Integer couponLimit) {
         this.subscriptionId = subscriptionId;
         this.merchantId = merchantId;
         this.planName = planName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.status = status;
+        this.couponLimit = couponLimit;
     }
 
     public Long getSubscriptionId() { return subscriptionId; }
@@ -38,4 +44,7 @@ public class SubscriptionResponseDto {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public Integer getCouponLimit() { return couponLimit; }
+    public void setCouponLimit(Integer couponLimit) { this.couponLimit = couponLimit; }
 }

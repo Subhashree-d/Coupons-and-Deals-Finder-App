@@ -2,7 +2,6 @@ package com.example.couponservice.dto;
 
 import com.example.couponservice.entity.CouponStatus;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CouponResponse {
@@ -15,13 +14,17 @@ public class CouponResponse {
     private BigDecimal cashbackPercentage;
     private String couponCode;
     private BigDecimal minimumPurchase;
-    private LocalDate validFrom;
-    private LocalDate validUntil;
+    private LocalDateTime validFrom;
+    private LocalDateTime validUntil;
     private Integer usageLimit;
     private Integer usageCount;
     private CouponStatus status;
     private LocalDateTime createdAt;
     private String approvedBy;
+    private Integer upvoteCount;
+    private Integer downvoteCount;
+    private Integer totalVotes;
+    private BigDecimal reliabilityScore;
 
     public CouponResponse() {}
 
@@ -52,11 +55,11 @@ public class CouponResponse {
     public BigDecimal getMinimumPurchase() { return minimumPurchase; }
     public void setMinimumPurchase(BigDecimal minimumPurchase) { this.minimumPurchase = minimumPurchase; }
 
-    public LocalDate getValidFrom() { return validFrom; }
-    public void setValidFrom(LocalDate validFrom) { this.validFrom = validFrom; }
+    public LocalDateTime getValidFrom() { return validFrom; }
+    public void setValidFrom(LocalDateTime validFrom) { this.validFrom = validFrom; }
 
-    public LocalDate getValidUntil() { return validUntil; }
-    public void setValidUntil(LocalDate validUntil) { this.validUntil = validUntil; }
+    public LocalDateTime getValidUntil() { return validUntil; }
+    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
 
     public Integer getUsageLimit() { return usageLimit; }
     public void setUsageLimit(Integer usageLimit) { this.usageLimit = usageLimit; }
@@ -72,4 +75,16 @@ public class CouponResponse {
 
     public String getApprovedBy() { return approvedBy; }
     public void setApprovedBy(String approvedBy) { this.approvedBy = approvedBy; }
+
+    public Integer getUpvoteCount() { return upvoteCount; }
+    public void setUpvoteCount(Integer upvoteCount) { this.upvoteCount = upvoteCount; }
+
+    public Integer getDownvoteCount() { return downvoteCount; }
+    public void setDownvoteCount(Integer downvoteCount) { this.downvoteCount = downvoteCount; }
+
+    public Integer getTotalVotes() { return totalVotes; }
+    public void setTotalVotes(Integer totalVotes) { this.totalVotes = totalVotes; }
+
+    public BigDecimal getReliabilityScore() { return reliabilityScore; }
+    public void setReliabilityScore(BigDecimal reliabilityScore) { this.reliabilityScore = reliabilityScore; }
 }

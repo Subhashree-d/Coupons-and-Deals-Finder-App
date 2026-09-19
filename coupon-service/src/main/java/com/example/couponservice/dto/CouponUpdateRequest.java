@@ -1,13 +1,15 @@
 package com.example.couponservice.dto;
 
-import jakarta.validation.constraints.*;
+import com.example.couponservice.exception.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-public class CreateCouponRequest {
-
-    @NotNull(message = "Merchant ID is required")
-    private Long merchantId;
+public class CouponUpdateRequest {
 
     @NotBlank(message = "Title is required")
     private String title;
@@ -25,27 +27,40 @@ public class CreateCouponRequest {
     @PositiveOrZero(message = "Cashback percentage must be zero or positive")
     private BigDecimal cashbackPercentage;
 
-    @NotBlank(message = "Coupon code is required")
-    private String couponCode;
-
     @NotNull(message = "Minimum purchase is required")
     @PositiveOrZero(message = "Minimum purchase must be zero or positive")
     private BigDecimal minimumPurchase;
-
-    private Integer validityHours;
-
-    private LocalDateTime validFrom;
-
-    private LocalDateTime validUntil;
 
     @NotNull(message = "Usage limit is required")
     @Positive(message = "Usage limit must be at least 1")
     private Integer usageLimit;
 
-    public CreateCouponRequest() {}
+    public CouponUpdateRequest() {}
 
-    public Long getMerchantId() { return merchantId; }
-    public void setMerchantId(Long merchantId) { this.merchantId = merchantId; }
+    public CouponUpdateRequest(String title, String description, String category, BigDecimal discount,
+                               BigDecimal cashbackPercentage, BigDecimal minimumPurchase, Integer usageLimit) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.discount = discount;
+        this.cashbackPercentage = cashbackPercentage;
+        this.minimumPurchase = minimumPurchase;
+        this.usageLimit = usageLimit;
+    }
+
+    @JsonSetter("validFrom")
+    public void setValidFrom(Object validFrom) {
+        if (validFrom != null) {
+            throw new BadRequestException("Coupon validity dates cannot be modified after creation.");
+        }
+    }
+
+    @JsonSetter("validUntil")
+    public void setValidUntil(Object validUntil) {
+        if (validUntil != null) {
+            throw new BadRequestException("Coupon validity dates cannot be modified after creation.");
+        }
+    }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -62,20 +77,8 @@ public class CreateCouponRequest {
     public BigDecimal getCashbackPercentage() { return cashbackPercentage; }
     public void setCashbackPercentage(BigDecimal cashbackPercentage) { this.cashbackPercentage = cashbackPercentage; }
 
-    public String getCouponCode() { return couponCode; }
-    public void setCouponCode(String couponCode) { this.couponCode = couponCode; }
-
     public BigDecimal getMinimumPurchase() { return minimumPurchase; }
     public void setMinimumPurchase(BigDecimal minimumPurchase) { this.minimumPurchase = minimumPurchase; }
-
-    public Integer getValidityHours() { return validityHours; }
-    public void setValidityHours(Integer validityHours) { this.validityHours = validityHours; }
-
-    public LocalDateTime getValidFrom() { return validFrom; }
-    public void setValidFrom(LocalDateTime validFrom) { this.validFrom = validFrom; }
-
-    public LocalDateTime getValidUntil() { return validUntil; }
-    public void setValidUntil(LocalDateTime validUntil) { this.validUntil = validUntil; }
 
     public Integer getUsageLimit() { return usageLimit; }
     public void setUsageLimit(Integer usageLimit) { this.usageLimit = usageLimit; }

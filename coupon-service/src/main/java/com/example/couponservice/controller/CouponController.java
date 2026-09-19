@@ -1,8 +1,6 @@
-package package com.example.couponservice.controller;
+package com.example.couponservice.controller;
 
-import com.example.couponservice.dto.CreateCouponRequest;
-import com.example.couponservice.dto.CouponResponse;
-import com.example.couponservice.dto.UpdateCouponRequest;
+import com.example.couponservice.dto.*;
 import com.example.couponservice.service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/coupons")
-@Tag(name = "Coupon Controller", description = "Endpoints for creating deals/coupons, customer discovery and admin approval")
+@Tag(name = "Coupon Controller", description = "Endpoints for creating deals/coupons, customer discovery, voting and admin approval")
 public class CouponController {
 
     private final CouponService couponService;
@@ -26,13 +24,39 @@ public class CouponController {
 
     @PostMapping
     @Operation(summary = "Create a new coupon (Merchant only, status: PENDING_APPROVAL)")
-    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CreateCouponRequest request) {
-        return new ResponseEntity<>(couponService.createCoupon(request), HttpStatus.CREATED);
+    public ResponseEntity<CouponResponse> createCoupon(@Valid @RequestBody CreateCouponRequest request,
+                                                       @RequestHeader(value = "X-User-Id", required = false) String authUserId,
+                                                       @RequestHeader(value = "X-User-Role", required = false) String authUserRole) {
+        return new ResponseEntity<>(couponService.createCoupon(request, authUserId, authUserRole), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}/votes")
+    @Operation(summary = "Customer casts a vote on a coupon (UPVOTE/DOWNVOTE)")
+    public ResponseEntity<VoteResponse> castVote(@PathVariable("id") Long id,
+                                                 @Valid @RequestBody VoteRequest request,
+                                                 @RequestHeader(value = "X-User-Id", required = false) String authUserId,
+                                                 @RequestHeader(value = "X-User-Role", required = false) String authUserRole) {
+        return ResponseEntity.ok(couponService.castVote(id, request, authUserId, authUserRole));
+    }
+
+    @GetMapping("/{id}/reliability")
+    @Operation(summary = "Get crowdsourced reliability score and vote counts for a coupon")
+    public ResponseEntity<CouponReliabilityResponse> getCouponReliability(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(couponService.getCouponReliability(id));
+    }
+
+    @GetMapping("/ranked")
+    @Operation(summary = "Get active coupons sorted by smart rank (reliability score, total votes, newest)")
+    public ResponseEntity<List<CouponResponse>> getRankedCoupons() {
+        return ResponseEntity.ok(couponService.getRankedActiveCoupons());
     }
 
     @GetMapping
     @Operation(summary = "Get all active coupons for customer discovery")
-    public ResponseEntity<List<CouponResponse>> getActiveCoupons() {
+    public ResponseEntity<List<CouponResponse>> getActiveCoupons(@RequestParam(value = "sort", required = false) String sort) {
+        if ("smart".equalsIgnoreCase(sort) || "ranked".equalsIgnoreCase(sort)) {
+            return ResponseEntity.ok(couponService.getRankedActiveCoupons());
+        }
         return ResponseEntity.ok(couponService.getActiveCoupons());
     }
 
@@ -49,10 +73,12 @@ public class CouponController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update coupon details")
+    @Operation(summary = "Update coupon details (Immutable validity dates)")
     public ResponseEntity<CouponResponse> updateCoupon(@PathVariable("id") Long id,
-                                                       @Valid @RequestBody UpdateCouponRequest request) {
-        return ResponseEntity.ok(couponService.updateCoupon(id, request));
+                                                       @Valid @RequestBody CouponUpdateRequest request,
+                                                       @RequestHeader(value = "X-User-Id", required = false) String authUserId,
+                                                       @RequestHeader(value = "X-User-Role", required = false) String authUserRole) {
+        return ResponseEntity.ok(couponService.updateCoupon(id, request, authUserId, authUserRole));
     }
 
     @DeleteMapping("/{id}")

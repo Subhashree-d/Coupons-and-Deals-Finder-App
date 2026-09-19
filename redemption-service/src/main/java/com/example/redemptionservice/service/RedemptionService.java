@@ -28,6 +28,7 @@ public class RedemptionService {
 
     private final RedemptionRepository redemptionRepository;
     private final CouponClient couponClient;
+    private final com.example.redemptionservice.client.MerchantClient merchantClient;
     private final RabbitTemplate rabbitTemplate;
 
     @Value("${rabbitmq.exchange.redemption:deals.redemption.exchange}")
@@ -38,9 +39,11 @@ public class RedemptionService {
 
     public RedemptionService(RedemptionRepository redemptionRepository,
                              CouponClient couponClient,
+                             com.example.redemptionservice.client.MerchantClient merchantClient,
                              RabbitTemplate rabbitTemplate) {
         this.redemptionRepository = redemptionRepository;
         this.couponClient = couponClient;
+        this.merchantClient = merchantClient;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -67,11 +70,19 @@ public class RedemptionService {
             throw new ResourceNotFoundException("Coupon not found with ID: " + request.getCouponId());
         }
 
+        if ("HIDDEN".equalsIgnoreCase(coupon.getStatus())) {
+            throw new BusinessException("Coupon is currently HIDDEN due to low reliability score and cannot be redeemed.");
+        }
+
         if (!"ACTIVE".equalsIgnoreCase(coupon.getStatus())) {
             throw new BusinessException("Coupon is not ACTIVE. Current status: " + coupon.getStatus());
         }
 
-        if (coupon.getValidUntil() != null && coupon.getValidUntil().isBefore(LocalDate.now())) {
+        if (coupon.getValidFrom() != null && coupon.getValidFrom().isAfter(LocalDateTime.now())) {
+            throw new BusinessException("Coupon is not yet valid. Valid from: " + coupon.getValidFrom());
+        }
+
+        if (coupon.getValidUntil() != null && coupon.getValidUntil().isBefore(LocalDateTime.now())) {
             throw new BusinessException("Coupon has expired on: " + coupon.getValidUntil());
         }
 
@@ -110,7 +121,7 @@ public class RedemptionService {
         Redemption saved = redemptionRepository.save(redemption);
         log.info("Coupon redemption successful with ID: {}", saved.getRedemptionId());
 
-        // 4. Publish CouponRedeemedEvent to RabbitMQ (10 points awarded)
+        // 4. Publish CouponRedeemedEvent to RabbitMQ (100 points awarded)
         CouponRedeemedEvent event = new CouponRedeemedEvent(
                 saved.getRedemptionId(),
                 saved.getCouponId(),
@@ -149,10 +160,98 @@ public class RedemptionService {
                 .collect(Collectors.toList());
     }
 
+    public CustomerRedemptionHistoryResponse getCustomerRedemptionHistory(Long customerId, org.springframework.data.domain.Pageable pageable, String authUserId, String authUserRole) {
+        validateCustomerAccess(customerId, authUserId, authUserRole);
+        org.springframework.data.domain.Page<Redemption> page = redemptionRepository.findByCustomerIdOrderByRedeemedAtDesc(customerId, pageable);
+        List<CustomerRedemptionHistoryItemDto> items = page.getContent().stream()
+                .map(this::mapToHistoryItem)
+                .collect(Collectors.toList());
+        return new CustomerRedemptionHistoryResponse(
+                items,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
+
+    public List<CustomerRedemptionHistoryItemDto> getRecentRedemptionHistory(Long customerId, int limit, String authUserId, String authUserRole) {
+        validateCustomerAccess(customerId, authUserId, authUserRole);
+        List<Redemption> list = redemptionRepository.findTop10ByCustomerIdOrderByRedeemedAtDesc(customerId);
+        if (limit > 0 && limit < list.size()) {
+            list = list.subList(0, limit);
+        }
+        return list.stream()
+                .map(this::mapToHistoryItem)
+                .collect(Collectors.toList());
+    }
+
+    private void validateCustomerAccess(Long customerId, String authUserId, String authUserRole) {
+        if (customerId == null) {
+            throw new BadRequestException("Customer ID cannot be null.");
+        }
+        if (authUserId != null && !authUserId.isBlank() && "CUSTOMER".equalsIgnoreCase(authUserRole)) {
+            if (!customerId.toString().equals(authUserId)) {
+                throw new BadRequestException("Access denied: You cannot view redemption history of another customer.");
+            }
+        }
+    }
+
+    private CustomerRedemptionHistoryItemDto mapToHistoryItem(Redemption r) {
+        String couponTitle = null;
+        String couponCode = null;
+        String merchantName = null;
+
+        if (r.getCouponId() != null) {
+            try {
+                CouponValidationDto coupon = couponClient.getCouponById(r.getCouponId());
+                if (coupon != null) {
+                    couponTitle = coupon.getTitle();
+                    couponCode = coupon.getCouponCode();
+                }
+            } catch (Exception e) {
+                log.warn("Could not fetch coupon details for coupon ID {}: {}", r.getCouponId(), e.getMessage());
+            }
+        }
+
+        if (r.getMerchantId() != null) {
+            try {
+                MerchantResponseDto merchant = merchantClient.getMerchantById(r.getMerchantId());
+                if (merchant != null) {
+                    merchantName = merchant.getBusinessName();
+                }
+            } catch (Exception e) {
+                log.warn("Could not fetch merchant details for merchant ID {}: {}", r.getMerchantId(), e.getMessage());
+            }
+        }
+
+        return new CustomerRedemptionHistoryItemDto(
+                r.getRedemptionId(),
+                r.getCouponId(),
+                couponTitle,
+                couponCode,
+                r.getMerchantId(),
+                merchantName,
+                r.getRedeemedAt(),
+                r.getPurchaseAmount(),
+                r.getDiscountAmount(),
+                10,
+                r.getStatus() != null ? r.getStatus().name() : null
+        );
+    }
+
     public List<RedemptionResponse> getRedemptionsByMerchantId(Long merchantId) {
         return redemptionRepository.findByMerchantId(merchantId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public boolean hasCustomerRedeemed(Long customerId, Long couponId) {
+        if (customerId == null || couponId == null) {
+            return false;
+        }
+        return redemptionRepository.existsByCustomerIdAndCouponId(customerId, couponId);
     }
 
     private RedemptionResponse mapToResponse(Redemption r) {

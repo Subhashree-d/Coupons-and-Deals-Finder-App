@@ -6,5 +6,6 @@ public enum CouponStatus {
     REJECTED,
     ACTIVE,
     INACTIVE,
-    EXPIRED
+    EXPIRED,
+    HIDDEN
 }
