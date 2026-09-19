@@ -60,3 +60,8 @@ out/
 ehthumbs.db
 Thumbs.db
 desktop.ini
+
+# Local Documentation & Collections
+postman_collection.json
+PROJECT_DOCUMENTATION.md
+
