@@ -291,25 +291,6 @@ Import the included `postman_collection.json` file into Postman.
 
 ---
 
-## 💡 9. Interview Cheat Sheet for Interns / Freshers
-
-When explaining this project in an interview:
-
-1. **Why Microservices over Monolith?**  
-   *Isolation of business boundaries* (e.g. Payment & Subscription failures do not bring down Coupon discovery for customers). Independent database ownership prevents monolithic bottlenecks.
-2. **How does Service Discovery work?**  
-   Each service registers its host/port with **Netflix Eureka**. When `coupon-service` calls `subscription-service`, OpenFeign queries Eureka for instances of `SUBSCRIPTION-SERVICE` and load balances automatically.
-3. **How does the Saga work?**  
-   It is a **choreography-based Saga**. Payment verification does not use a central orchestrator; instead, `payment-service` publishes a `PaymentVerifiedEvent` to RabbitMQ, and `subscription-service` independently consumes it to activate the subscription.
-4. **Why OpenFeign for some calls and RabbitMQ for others?**  
-   - **OpenFeign (Synchronous):** Used when an immediate answer is required to make a business decision (e.g. "Does this merchant have an active subscription right now?").
-   - **RabbitMQ (Asynchronous):** Used for non-blocking side-effects (e.g. calculating loyalty points, sending SMS/Email alerts, and fanning out new-coupon notifications).
-5. **How is Resilience handled?**  
-   **Resilience4j Circuit Breakers** prevent cascading failures when downstream microservices are slow or offline. If a service call fails, retries are attempted before falling back to cached or default responses.
-6. **How is security handled?**  
-   The **API Gateway** intercepts incoming requests, validates the JWT Bearer token, extracts user claims (`email`, `role`, `userId`), and attaches header metadata (`X-User-Email`, `X-User-Role`, `X-User-Id`) for downstream services. Short-lived JWT Access Tokens are paired with database-backed **Refresh Tokens** (`POST /api/auth/refresh-token`), and logging out (`POST /api/auth/logout`) explicitly revokes the Refresh Token in `auth_db` to prevent session reuse.
-
----
 
 ## 📄 License
 Academic / Learning Project - Built for Spring Boot & Microservices Fresher Learning.
