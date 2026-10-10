@@ -1,8 +1,8 @@
 # Deals, Coupons & Merchant Subscription Platform
 
-A backend-only enterprise-grade microservices platform built with **Java 21**, **Spring Boot 3.3.3**, **Spring Cloud 2023**, **MySQL 8.0**, **RabbitMQ**, **OpenFeign**, and **Resilience4j**.
+A backend-only enterprise-grade microservices platform built with **Java 21**, **Spring Boot**, **Spring Cloud**, **MySQL 8.0**, **RabbitMQ**, **OpenFeign**, and **Resilience4j**.
 
-Designed with **clean enterprise architectural principles**: strict database-per-service isolation, robust JWT authentication at the API Gateway, asynchronous Saga choreography, crowdsourced Wilson ranking, customer loyalty tiers, real-time merchant alerts, merchant revenue analytics, and comprehensive Resilience4j circuit breakers across all inter-service communications.
+Designed with **clean enterprise architectural principles**: strict database-per-service isolation, robust JWT authentication at the API Gateway, asynchronous Saga choreography, crowdsourced Wilson ranking, customer loyalty tiers, real-time merchant alerts, merchant revenue analytics and comprehensive Resilience4j circuit breakers across all inter-service communications.
 
 ---
 
@@ -152,7 +152,7 @@ Merchant has ACTIVE subscription and is authorized to create coupons.
 
 ## ⚡ 5. Resilience4j Circuit Breakers & Fault Tolerance
 
-All inter-service synchronous calls via OpenFeign are hardened with **Resilience4j Circuit Breakers**, **Retries (3 attempts with exponential backoff)**, and graceful **Fallbacks**:
+All inter-service synchronous calls via OpenFeign are hardened with **Resilience4j Circuit Breakers**, **Retries (3 attempts with exponential backoff)** and graceful **Fallbacks**:
 
 | Microservice | OpenFeign Client | Target Service & Endpoint | Fallback Strategy |
 |---|---|---|---|
@@ -193,8 +193,8 @@ public interface CashbackClient {
 
 ### Prerequisites:
 - **Java 21 JDK**
-- **Maven 3.8+**
-- **Docker & Docker Compose** (Optional for containerized run)
+- **Maven 3.9+**
+- **Docker & Docker Compose** (Optional for containerized run)3
 - **MySQL (Port 3306)** & **RabbitMQ (Port 5672/15672)**
 
 ### Option A: Running with Docker Compose (Single Command)
@@ -240,7 +240,7 @@ docker-compose up --build
 
 ## 🧪 7. Running Unit & Integration Tests
 
-Every microservice includes JUnit 5 and Mockito tests covering happy paths, edge cases, business rule violations, and MockMvc controller endpoints:
+Every microservice includes JUnit 5 and Mockito tests covering happy paths, edge cases, business rule violations and MockMvc controller endpoints:
 
 ```bash
 # Run tests for all modules
